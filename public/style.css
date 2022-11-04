@@ -1,0 +1,21 @@
+.column{
+    width: 30px;
+    height: auto;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.row{
+    width: 30px;
+    height: 30px;
+}
+
+.row:hover{
+    border: 2px solid black ;
+    margin: -2px;
+    position: relative;
+}
+
+.container{
+    white-space: nowrap;
+}
