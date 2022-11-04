@@ -1,0 +1,10 @@
+{
+    "db_username": "",
+    "db_databse": "",
+    "db_password":"",
+    "db_server": "",
+    "express_session_secret": "awdjnksefughbawjop]vnm671238564kxghvagcla#%",
+    "place_col": 7,
+    "place_row": 5,
+    "default_color": "e8b833"
+}
