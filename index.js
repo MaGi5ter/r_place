@@ -34,10 +34,30 @@ app.use(session({
     resave: false 
 }));
 
-//on start
+//these functions need to start everytime when starts program
 const check = require('./check')
 check.check()
+
+const query = (sql) => {                         
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, rows) => {
+            if(err) {
+                return reject(err);
+            }           
+            return resolve(rows)
+        })
+    }) 
+}
+
+onStartMSQLcheck()
+async function onStartMSQLcheck(){
+    globals.block = await query("SELECT * FROM place")
+    globals.hgh = await query("SELECT MAX(col) AS col , MAX(row) AS row FROM `place`")
+}   
 
 //ROUTES
 const mainRoute = require("./routes/main")
 app.use('/',mainRoute)
+
+const dataRoute = require("./routes/data")
+app.use('/block',dataRoute)

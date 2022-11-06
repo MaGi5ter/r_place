@@ -15,18 +15,11 @@
     <div class="container">
         <div class="divTable">
             <script>
-                function draw(arr)
-                {
-                    for (const [indexc,colls] of arr.entries()) {
-                       document.getElementById('divTable').innerHTML = `<div class="column" id="${indexc}">`
-                       // document.write(`<div class="column" >`)
-                        for (const [indexr,rows] of colls.entries()) {
-                            document.getElementById(`${indexc}`).innerHTML += `<div style="background-color:#${rows}" id="${indexc}.${indexr}" class="row"></div>`
-                            //document.write(`<div style="background-color:#${rows}" id="${indexc}.${indexr}" class="row"></div>`)
-                        }
-                        document.write(`</div>`)
-                    }
-                }
+              var getData = '<%-blocks%>'
+              var hgh = '<%-hgh%>'
+              createGrid(hgh).then((a) => {
+                drawData(getData)
+              })
             </script>
         </div>
     </div>

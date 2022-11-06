@@ -1,7 +1,7 @@
-var blocks_colors = []
-var session = []
+var block = []
+var highest 
 
 module.exports = {
-    block: blocks_colors,
-    ssn: session
+    block: block,
+    hgh: highest
 }
