@@ -10,12 +10,54 @@
     height: 30px;
 }
 
-.row:hover{
-    border: 2px solid black ;
-    margin: -2px;
-    position: relative;
+.cell {
+    width: 28px;
+    height: 29px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.cell:hover{
+    outline: 1px solid black
 }
 
 .container{
     white-space: nowrap;
+}
+
+#color{
+    width: 90px;
+    height: 24px;
+    position: absolute;
+    background: grey;
+    display: none;
+}
+
+.green,.red,.blue,.yellow {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin: 1px;
+    margin-top: 2px;
+}
+
+.green:hover ,.red:hover,  .blue:hover,  .yellow:hover {
+    background-color: azure;
+}
+
+.green {
+    background-color: greenyellow;
+    margin-left: 2px;
+}
+
+.red {
+    background-color: red;
+}
+
+.blue {
+    background-color: rgb(39, 74, 230);
+}
+
+.yellow {
+    background-color: rgb(232, 184, 51);
 }

@@ -12,16 +12,24 @@
 </head>
 <body>
     <link rel="stylesheet" href="style.css">
+
     <div class="container">
         <div class="divTable">
             <script>
-              var getData = '<%-blocks%>'
-              var hgh = '<%-hgh%>'
+              var getData = '<%-blocks%>';
+              var hgh = '<%-hgh%>';
               createGrid(hgh).then((a) => {
-                drawData(getData)
-              })
+                drawData(getData);
+              });
             </script>
         </div>
+    </div>
+
+    <div id="color">
+      <div onclick="color_data('green')" class="green"></div>
+      <div onclick="color_data('red')" class="red"></div>
+      <div onclick="color_data('blue')" class="blue"></div>
+      <div onclick="color_data('yellow')" class="yellow"></div>
     </div>
 </body>
 </html>

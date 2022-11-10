@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const globals = require('../globals')
+const db = require('../mysql')
 
 router
     .route("/")

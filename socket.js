@@ -1,42 +1,37 @@
+const { block } = require('./globals');
+
 //SOCKET.IO
 module.exports = async function (server) {
     const socket = require("socket.io");
     const io = socket(server);
-
-    let maxVal = 0xFFFFFF; // 16777215
-    let randomNumber = Math.random() * maxVal; randomNumber = Math.floor(randomNumber);
-    randomNumber = randomNumber.toString(16);
-    randomNumber.padStart(6, 0);
-
-    console.log(randomNumber)
-
-    function create_arr(rows,colls)
-    {
-        let arr = []
-
-        for(let y = 0; y < colls;y++)
-        {
-            arr.push([])
-
-            for(let x = 1; x <= rows;x++)
-            {
-                arr[y].push(randomNumber)
-            }
-        }
-        return arr
-    }
-
-
-    var blocks = create_arr(100,100)
+    const db = require('./mysql')
 
     io.on("connection", async function (socket) {
+        socket.on("color_data", (data) => {
+            data[1] = data[1].split('.')
+            sql = ''
 
-        //console.log('a')
+            let color
 
-        socket.emit('arr', blocks)
+            if(data[0] != 'green'  && data[0] != 'blue' && data[0] != 'yellow' && data[0] != 'red') return
+            else if (data[0] == 'green')
+                color = '32CD32'
+            else if (data[0] == 'blue') 
+                color = '3333ff'
+            else if (data[0] == 'red')
+                color = 'ff3333'
+            else if(data[0] == 'yellow')
+                color = 'e8b833'
 
-        socket.on("create", (data) => {
-           
+            sql = `UPDATE place SET color = '${color}' WHERE col = ${data[1][0]} AND row = ${data[1][1]}`
+            db.query(sql,function (err) {
+                if(err)throw err
+            })
+
+            let draw_data = [color,data[1]]
+            io.emit('draw',draw_data)
+            
+           console.log(data)
         })
     })
 }
