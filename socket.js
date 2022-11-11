@@ -1,11 +1,11 @@
-const { block } = require('./globals');
+const globals = require('./globals');
+const socket = require("socket.io");
+const db = require('./mysql');
+const config = require('./config.json');
 
 //SOCKET.IO
 module.exports = async function (server) {
-    const socket = require("socket.io");
     const io = socket(server);
-    const db = require('./mysql')
-
     io.on("connection", async function (socket) {
         socket.on("color_data", (data) => {
             data[1] = data[1].split('.')
@@ -26,12 +26,15 @@ module.exports = async function (server) {
             sql = `UPDATE place SET color = '${color}' WHERE col = ${data[1][0]} AND row = ${data[1][1]}`
             db.query(sql,function (err) {
                 if(err)throw err
-            })
+                else {
 
-            let draw_data = [color,data[1]]
-            io.emit('draw',draw_data)
-            
-           console.log(data)
+                    let draw_data = [color,data[1]]
+                    io.emit('draw',draw_data)
+                    let index = ((parseInt(data[1][0])-1) * parseInt(config.place_row) + parseInt(data[1][1]))-1                  
+                    globals.block[index][2] = color
+                    
+                }
+            })
         })
     })
 }

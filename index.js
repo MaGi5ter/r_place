@@ -36,32 +36,7 @@ app.use(session({
 
 //these functions need to start everytime when starts program
 const check = require('./check')
-//check.check()
-
-const query = (sql) => {                         
-    return new Promise((resolve, reject) => {
-        db.query(sql, (err, rows) => {
-            if(err) {
-                return reject(err);
-            }           
-            return resolve(rows)
-        })
-    }) 
-}
-onStartMSQLcheck()
-async function onStartMSQLcheck(){
-    globals.block = await query("SELECT * FROM place")
-    console.log(globals.block)
-
-    function sorter(a,b){
-        console.log(a.col)
-        a.col - b.col
-    }
-
-    globals.block = globals.block.sort(sorter)
-    console.log(globals.block)
-    globals.hgh = await query("SELECT MAX(col) AS col , MAX(row) AS row FROM `place`")
-}   
+check.check()
 
 //ROUTES
 const mainRoute = require("./routes/main")

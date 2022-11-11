@@ -2,8 +2,9 @@ const socket = io()
 
 function drawData(data) {
     data = JSON.parse(data)
-    for (const i in data) {
-        document.getElementById(`${data[i].col}.${data[i].row}`).style.backgroundColor = `#${data[i].color}`;
+
+    for (const i of data) {
+        document.getElementById(`${i[0]}.${i[1]}`).style.backgroundColor = `#${i[2]}`;
     }
 }
 
@@ -12,10 +13,10 @@ function createGrid(hgh) {
         hgh = JSON.parse(hgh)
         let col = hgh[0].col
         let row = hgh[0].row
-        for (let index = 0; index <= col; index++) {
+        for (let index = 1; index <= col; index++) {
             document.write(`<div class="column">`)
             for (let i = 1; i <= row; i++) {   
-                document.write(`<div onclick="color_palette('${index}.${i}','${index}.${i}_')" id="${index}.${i}" class="row"> 
+                document.write(`<div onclick="color_palette('${index}.${i}','${index}.${i}_',event)" id="${index}.${i}" class="row"> 
                 <div class="cell" id="${index}.${i}_"></div>
                 </div>`)
             }
@@ -25,10 +26,10 @@ function createGrid(hgh) {
     })
 }
 
-let current_border = '0.1_'
+let current_border = '1.1_'
 let selected
 
-function color_palette(id,id_cell) {
+function color_palette(id,id_cell,event) {
     let y = document.getElementById(id).getBoundingClientRect().top
     let x = document.getElementById(id).getBoundingClientRect().left
     let colr = document.getElementById("color")
@@ -37,8 +38,8 @@ function color_palette(id,id_cell) {
     if(current_border != id_cell) {
         document.getElementById(current_border).style.outline = '0px solid black' ;current_border = id_cell
         selected = id
-        colr.style.left = `${x+35}px`
-        colr.style.top = `${y+6}px`
+        colr.style.left = `${event.clientX+35}px`
+        colr.style.top = `${event.clientY+6}px`
         colr.style.display = `block`
     } else {
         document.getElementById(current_border).style.outline = '0px solid black'
