@@ -30,21 +30,36 @@ let current_border = '1.1_'
 let selected
 
 function color_palette(id,id_cell,event) {
-    let y = document.getElementById(id).getBoundingClientRect().top
-    let x = document.getElementById(id).getBoundingClientRect().left
     let colr = document.getElementById("color")
-
     document.getElementById(id_cell).style.outline = "1px solid black"
     if(current_border != id_cell) {
         document.getElementById(current_border).style.outline = '0px solid black' ;current_border = id_cell
         selected = id
-        colr.style.left = `${event.clientX+35}px`
-        colr.style.top = `${event.clientY+6}px`
+        console.log(event.clientX)
+
+        let x = event.clientX + 5
+        let y = event.clientY + 5
+
+        let winWidth = window.innerWidth
+        let winHeight = window.innerHeight
+
+        x = x > winWidth - colr.offsetWidth ? x - 120 : x
+        y = y > winHeight - colr.offsetHeight ? y - 50 : y
+
+
+        colr.style.left = `${x}px`
+        colr.style.top = `${y}px`
         colr.style.display = `block`
     } else {
         document.getElementById(current_border).style.outline = '0px solid black'
         colr.style.display = `none`
     }
+}
+
+document.onscroll = () => {
+    let colr = document.getElementById("color")
+    document.getElementById(current_border).style.outline = '0px solid black'
+    colr.style.display = `none`
 }
 
 function color_data(color) {
@@ -57,4 +72,59 @@ socket.on(`draw`, function (data) {
     id = `${data[1][0]}.${data[1][1]}`
     let el = document.getElementById(id)
     el.style.backgroundColor = `#${data[0]}`
+})
+
+//const contextMenu = document.getElementById('color')
+document.addEventListener('contextmenu', e => {
+    e.preventDefault()
+})
+
+socket.on(`alert`, function (data) {
+    console.log(data)
+    swal(data)
+})
+
+//DRAG 
+
+let isDown = false
+let startX
+let startY
+let scrollLeft 
+let scrollTop
+
+let grid = document.getElementById('container') 
+
+document.addEventListener('mousedown', (e) => {
+    isDown = true
+    startX = e.pageX
+    startY = e.pageY
+    scrollLeft  = document.scrollWidth
+    scrollTop   = document.scrollHeight
+
+    console.log(scrollLeft)
+    console.log(grid)
+})
+
+document.addEventListener('mouseup', () => {
+    isDown = false
+})
+
+document.addEventListener('mousemove', (e) => {
+    if(isDown != true) return
+    e.preventDefault()
+
+    const x = e.pageX
+    const y = e.pageY
+
+    const moveX = x-startX
+    const moveY = y-startY
+
+    document.scrollLeft = scrollLeft - moveX
+
+    console.log('X ', startX, ' ' , x )
+    console.log('Y ', startY, ' ' , y )
+    console.log('Xmove ', moveX )
+
+    console.log(grid.scrollLeft)
+    
 })

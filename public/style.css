@@ -1,3 +1,11 @@
+body {
+    margin: 0px;
+}
+
+body::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
+
 .column{
     width: 30px;
     height: auto;
@@ -23,17 +31,18 @@
 
 .container{
     white-space: nowrap;
+    overflow-x: scroll;
 }
 
 #color{
-    width: 90px;
+    width: 134px;
     height: 24px;
-    position: absolute;
+    position: fixed;
     background: grey;
     display: none;
 }
 
-.green,.red,.blue,.yellow {
+.green,.red,.blue,.yellow,.pink,.grey {
     width: 20px;
     height: 20px;
     float: left;
@@ -41,7 +50,7 @@
     margin-top: 2px;
 }
 
-.green:hover ,.red:hover,  .blue:hover,  .yellow:hover {
+.green:hover ,.red:hover,  .blue:hover,  .yellow:hover ,  .grey:hover ,  .pink:hover {
     background-color: azure;
 }
 
@@ -60,4 +69,12 @@
 
 .yellow {
     background-color: rgb(232, 184, 51);
+}
+
+.pink {
+    background-color: rgb(255,141,161);
+}
+
+.grey {
+    background-color: #A9A9A9;
 }

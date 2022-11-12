@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="code.js"></script>
     <script src="socket-main.js"></script>
@@ -13,7 +14,7 @@
 <body>
     <link rel="stylesheet" href="style.css">
 
-    <div class="container">
+    <div id='container' class="container">
         <div class="divTable">
             <script>
               var getData = '<%- blocks%>';
@@ -30,6 +31,8 @@
       <div onclick="color_data('red')" class="red"></div>
       <div onclick="color_data('blue')" class="blue"></div>
       <div onclick="color_data('yellow')" class="yellow"></div>
+      <div onclick="color_data('grey')" class="grey"></div>
+      <div onclick="color_data('pink')" class="pink"></div>
     </div>
 </body>
 </html>

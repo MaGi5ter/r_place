@@ -3,7 +3,7 @@ const session = require('express-session')
 
 const config = require('./config.json')
 const globals = require('./globals')
-const PORT = 4200
+const PORT = 40387
 
 //APP SETUP
 const app = express()
