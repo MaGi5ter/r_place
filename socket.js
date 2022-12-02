@@ -7,6 +7,10 @@ const cooldown = 500
 //cooldown how often user can edit block
 
 const persec_limit = 0.8
+const perMinuteIp = 480 //how many per minute == ban
+
+var ipBlock = []
+const limitFromSingleIp = 8
 //anti spamming bots 
 
 
@@ -18,14 +22,39 @@ module.exports = async function (server) {
     io.on("connection", async function (socket) {
 
         var clientIp = socket.request.connection.remoteAddress;
-        console.log(clientIp);
+        //console.log(clientIp);
+
+        const findIP = ipBlock.findIndex(element => element[0] == clientIp)
+
+        let disc = {
+            title: "Disconnected",
+            text: "Too many connections from same IP",
+            icon: 'warning',
+            dangerMode: true,
+        }
+
+        if(findIP >= 0) {
+            if(ipBlock[findIP][1] >= limitFromSingleIp) {
+                socket.emit('alert',disc)
+                socket.disconnect()
+                return
+            }
+            ipBlock[findIP][1] = ipBlock[findIP][1] + 1
+        }
+        else {
+            ipBlock.push([clientIp,1])
+        }
+
+        console.log(ipBlock[findIP])
 
         const user = [socket.id,Date.now(),0,Date.now(),cooldown]
         socket.on('disconnect', (data) => {
             console.log(socket.id,' disconnected')
+            try {
+                ipBlock[findIP][1] = ipBlock[findIP][1] -1   
+            } catch (error) {}
         })
 
-        console.log(user)
         socket.on("color_data", (data) => {
 
             user[2] += 1
