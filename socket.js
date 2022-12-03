@@ -1,5 +1,4 @@
 const globals = require('./globals');
-const socket = require("socket.io");
 const db = require('./mysql');
 const config = require('./config.json');
 
@@ -12,9 +11,9 @@ let blacklist = []              //blacklist of ips that were considered as bots
 //fast normal clicking gives about 12 - 13 per 10 seconds about 0.76 delay beetwen clicks
 
 //SOCKET.IO
-module.exports = async function (server) {
-    const io = socket(server);
+module.exports = async function (io) {
     io.on("connection", async function (socket) {
+        if(!socket.request.session.simpleAuth) socket.disconnect()
 
         var clientIp = socket.request.connection.remoteAddress
         //console.log(clientIp);
@@ -77,7 +76,7 @@ module.exports = async function (server) {
                 if(ipBlock[findIP][2] > 0) {
                     ipBlock[findIP][2] = ipBlock[findIP][2] - 1
                 }
-                ipBlock[findIP][3][1] = ipBlock[findIP][3][1].slice(1,ipBlock[findIP][3][1].length)
+                ipBlock[findIP][3][1] = ipBlock[findIP][3][1].slice(ipBlock[findIP][3][1].length)
                 socket.emit('alert',probablyBot )
                 return
             }

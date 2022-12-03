@@ -2,12 +2,22 @@ const express = require('express')
 const session = require('express-session')
 
 const config = require('./config.json')
+const socket = require("socket.io");
 const globals = require('./globals')
 const PORT = 40387
 
 //APP SETUP
 const app = express()
+const oneDay = 1000 * 60 * 60 * 24;
 
+const sessionMiddleware = session({
+    secret: config.express_session_secret,
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false,
+})
+
+app.use(sessionMiddleware)
 app.use(express.json())
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: true}))
@@ -22,17 +32,13 @@ const server = app.listen(PORT, function () {
 const db = require('./mysql')
 
 //SOCKET.IO
-const socket_cod = require('./socket.js')
-socket_cod(server)
+const io = socket(server);
 
-//SESSION
-const oneDay = 1000 * 60 * 60 * 24;
-app.use(session({
-    secret: config.express_session_secret,
-    saveUninitialized:true,
-    cookie: { maxAge: oneDay },
-    resave: false 
-}));
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+io.use(wrap(sessionMiddleware))
+
+const socket_cod = require('./socket.js')
+socket_cod(io)
 
 //these functions need to start everytime when starts program
 const check = require('./check')

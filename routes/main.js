@@ -6,7 +6,7 @@ const db = require('../mysql')
 router
     .route("/")
     .get((req,res) => {
-        ssn = req.session
+        req.session.simpleAuth = 1
         res.render('index',{
             blocks:  JSON.stringify(globals.block),
             hgh: JSON.stringify(globals.hgh)
