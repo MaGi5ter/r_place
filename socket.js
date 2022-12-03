@@ -3,35 +3,22 @@ const socket = require("socket.io");
 const db = require('./mysql');
 const config = require('./config.json');
 
-const cooldown = 500
-//cooldown how often user can edit block
+const tenSecLimit = 12          //how many req from single socket in 10 seconds
+const limitFromSingleIp = 8     //limit of simualtoensly connected sockets from same id
+let ipBlock = []                //list of ever connected ip , to check if sb is connecting to often
+let blacklist = []              //blacklist of ips that were considered as bots
+//anti spamming bots
 
-const persec_limit = 0.8
-const perMinuteIp = 480 //how many per minute == ban
-
-var ipBlock = []
-const limitFromSingleIp = 8
-//anti spamming bots 
-
-
-//to do trust factor
+//fast normal clicking gives about 12 - 13 per 10 seconds about 0.76 delay beetwen clicks
 
 //SOCKET.IO
 module.exports = async function (server) {
     const io = socket(server);
     io.on("connection", async function (socket) {
 
-        var clientIp = socket.request.connection.remoteAddress;
+        var clientIp = socket.request.connection.remoteAddress
         //console.log(clientIp);
-
         const findIP = ipBlock.findIndex(element => element[0] == clientIp)
-
-        let disc = {
-            title: "Disconnected",
-            text: "Too many connections from same IP",
-            icon: 'warning',
-            dangerMode: true,
-        }
 
         if(findIP >= 0) {
             if(ipBlock[findIP][1] >= limitFromSingleIp) {
@@ -42,12 +29,9 @@ module.exports = async function (server) {
             ipBlock[findIP][1] = ipBlock[findIP][1] + 1
         }
         else {
-            ipBlock.push([clientIp,1])
+            ipBlock.push([clientIp,1,tenSecLimit,[[],[]]])
         }
 
-        console.log(ipBlock[findIP])
-
-        const user = [socket.id,Date.now(),0,Date.now(),cooldown]
         socket.on('disconnect', (data) => {
             console.log(socket.id,' disconnected')
             try {
@@ -55,55 +39,66 @@ module.exports = async function (server) {
             } catch (error) {}
         })
 
+        let socketCooldownCount = []
+        //here are stored every requests from specified user [dateofirstrequest.................dateoflastrequest]
+
         socket.on("color_data", (data) => {
 
-            user[2] += 1
-            let persec = (Date.now()-user[3])/1000/Math.abs(user[2])
-            console.log(persec)
-
-            if(persec < persec_limit){
-                socket.disconnect()
-                return
+            try {
+                socketCooldownCount.push(Date.now()) 
+                ipBlock[findIP][3][1].push(Date.now())   
+            } catch (error) {
+                if(error) return
             }
-
-            let test = {
-                title: "Slow down",
-                text: "You are sending too much edits, there is small cooldown for everyone",
-                icon: 'warning',
-                dangerMode: true,
-            }
-
-            if(Date.now() - user[1] < cooldown) {
-                socket.emit('alert',test)
-                return
-            }
-            else user[1] = Date.now()
-
-
-            // if(Date.now() - user[3] > 15000){
-            //     user[3] = Date.now()
-            //     user[2] = 0
-            // }
-
-            // console.log('b')
             
+            if(Date.now() - socketCooldownCount[0] > 10000) {  //if last request is older than 10secs removes it
+                while(Date.now() - socketCooldownCount[0] > 10000){
+                    socketCooldownCount = socketCooldownCount.slice(1)
+                }                   
+            }
+
+            if(Date.now() - ipBlock[findIP][3][1][0] > 60000) {  //if last request is older than one minute removes it
+                while(Date.now() - ipBlock[findIP][3][1][0] > 60000){
+                    ipBlock[findIP][3][1] = ipBlock[findIP][3][1].slice(1)   
+                }             
+            }
+  
+            let ipPerMinute         = ipBlock[findIP][3][1].length  
+            let socketPerTenSeconds = socketCooldownCount.length    //Maximum is declared in variable above
+
+            if(socketPerTenSeconds > tenSecLimit) {
+                socket.emit('alert',toomuchrequests)
+                return
+            }
+
+            if(ipPerMinute > (ipBlock[findIP][2] * limitFromSingleIp) * 3.8 ) {
+                //if that happens its huge chance that there are bots sending requests
+
+                if(ipBlock[findIP][2] > 0) {
+                    ipBlock[findIP][2] = ipBlock[findIP][2] - 1
+                }
+                ipBlock[findIP][3][1] = ipBlock[findIP][3][1].slice(1,ipBlock[findIP][3][1].length)
+                socket.emit('alert',probablyBot )
+                return
+            }
+
             try {
                 data[1] = data[1].split('.')   
             } catch (error) {
                 if(error) socket.emit('alert','SUS')
                 return
             }
-            sql = ''
 
+            sql = ''
             let color
 
             if(data[0] != 'green'  && data[0] != 'blue' && data[0] != 'yellow' && data[0] != 'grey' && data[0] != 'red' && data[0] != 'pink') return
             else if (data[0] == 'green')
-                color = '32CD32'
+                color = '32cd5e'
             else if (data[0] == 'blue') 
                 color = '3333ff'
             else if (data[0] == 'red')
-                color = 'ff3333'
+                color = 'e64747'
             else if(data[0] == 'yellow')
                 color = 'e8b833'
             else if(data[0] == 'grey')
@@ -120,11 +115,11 @@ module.exports = async function (server) {
                 return
             }
 
-            console.log(sql)
-
             db.query(sql,function (err) {
                 if(err)throw err
                 else {
+
+                    console.log('edited by ',clientIp,' ',socket.id,' || ',data[1][0],',',data[1][1],' || ip: ',ipPerMinute,'socket: ',socketPerTenSeconds)
 
                     let draw_data = [color,data[1]]
                     io.emit('draw',draw_data)
@@ -135,4 +130,25 @@ module.exports = async function (server) {
             })
         })
     })
+}
+
+let probablyBot = {
+    title: "Detected something SUSpicous",
+    text: "You IP is sending too much requests, so your cooldwon was increased",
+    icon: 'warning',
+    dangerMode: true,
+}
+
+let toomuchrequests = {
+    title: "Slow down",
+    text: "Too much edits, wait a while (10sec)",
+    icon: 'warning',
+    dangerMode: true,
+}
+
+let disc = {
+    title: "Disconnected",
+    text: "Too many connections from same IP",
+    icon: 'warning',
+    dangerMode: true
 }
