@@ -110,8 +110,7 @@ module.exports = async function (io) {
             sql = ''
             let color
 
-            if(data[0] != 'green'  && data[0] != 'blue' && data[0] != 'yellow' && data[0] != 'grey' && data[0] != 'red' && data[0] != 'pink') return
-            else if (data[0] == 'green')
+            if (data[0] == 'green')
                 color = '32cd5e'
             else if (data[0] == 'blue') 
                 color = '3333ff'
@@ -123,6 +122,13 @@ module.exports = async function (io) {
                 color = 'A9A9A9'
             else if(data[0] == 'pink')
                 color = 'FF8DA1'
+            else if(data[0] == 'brown')
+                color = 'A06A42'
+            else if(data[0] == 'white')
+                color = 'FFFFFF'
+            else if(data[0] == 'black')
+                color = '222222'
+            else return
 
             sql = `UPDATE place SET color = '${color}' WHERE col = ${data[1][0]} AND row = ${data[1][1]}`
 

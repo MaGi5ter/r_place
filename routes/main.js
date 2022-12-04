@@ -17,7 +17,6 @@ router
         else {
             req.session.simpleAuth = 1
             setTimeout(() => {
-                console.log('awdaw')
                 res.redirect('/')
             }, 500);
         }

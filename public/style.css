@@ -15,6 +15,7 @@ body::-webkit-scrollbar {
     display: flex;
     bottom: 0;
     left: 30vw;
+    right: auto;
     margin-top: 10vw;
     background: grey;
     height: 5vw;
@@ -23,11 +24,24 @@ body::-webkit-scrollbar {
 }
 
 #select_block {
-    width: 16.66%;
+    width: 11.11%;
 }
 
-.green:hover ,.red:hover,  .blue:hover,  .yellow:hover ,  .grey:hover ,  .pink:hover {
-    background-color: azure;
+.green:hover ,.red:hover,  .blue:hover,  .yellow:hover ,
+.grey:hover ,  .pink:hover, .white:hover, .black:hover, .brown:hover {
+    filter: brightness(50%)
+}
+
+.white {
+    background-color: #FFFFFF;
+}
+
+.black {
+    background-color: #222222;
+}
+
+.brown {
+    background-color: #A06A42;
 }
 
 .green {
