@@ -6,6 +6,7 @@ const tenSecLimit = 12          //how many req from single socket in 10 seconds
 const limitFromSingleIp = 8     //limit of simualtoensly connected sockets from same id
 let ipBlock = []                //list of ever connected ip , to check if sb is connecting to often
 let blacklist = []              //blacklist of ips that were considered as bots
+let sessionBlock = []           //block if more than one connection from single session ip
 //anti spamming bots
 
 //fast normal clicking gives about 12 - 13 per 10 seconds about 0.76 delay beetwen clicks
@@ -16,6 +17,8 @@ module.exports = async function (io) {
         if(!socket.request.session.simpleAuth) socket.disconnect()
 
         var clientIp = socket.request.connection.remoteAddress
+
+        console.log('new connection from',clientIp ,'sessionID: ',socket.request.sessionID)
         //console.log(clientIp);
         const findIP = ipBlock.findIndex(element => element[0] == clientIp)
 
@@ -23,6 +26,7 @@ module.exports = async function (io) {
             if(ipBlock[findIP][1] >= limitFromSingleIp) {
                 socket.emit('alert',disc)
                 socket.disconnect()
+                console.log('discconnect too many ip', clientIp)
                 return
             }
             ipBlock[findIP][1] = ipBlock[findIP][1] + 1
@@ -31,10 +35,25 @@ module.exports = async function (io) {
             ipBlock.push([clientIp,1,tenSecLimit,[[],[]]])
         }
 
+        const findSession = sessionBlock.findIndex(element => element[0] == socket.request.sessionID)
+
+        if(findSession == -1) {
+            sessionBlock.push([socket.request.sessionID,0])
+        }
+        else {
+            if(sessionBlock[findSession][1] > 0) {
+                console.log('disconnected same session')
+                socket.disconnect()
+                return
+            }
+            sessionBlock[findSession][1] = sessionBlock[findSession][1] + 1
+        }
+
         socket.on('disconnect', (data) => {
             console.log(socket.id,' disconnected')
             try {
-                ipBlock[findIP][1] = ipBlock[findIP][1] -1   
+                ipBlock[findIP][1] = ipBlock[findIP][1] -1  
+                sessionBlock[findSession][1] =  sessionBlock[findSession][1] -1
             } catch (error) {}
         })
 

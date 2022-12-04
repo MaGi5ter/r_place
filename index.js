@@ -8,12 +8,12 @@ const PORT = 40387
 
 //APP SETUP
 const app = express()
-const oneDay = 1000 * 60 * 60 * 24;
+const oneHour = 1000 * 60 * 60;
 
 const sessionMiddleware = session({
     secret: config.express_session_secret,
     saveUninitialized:true,
-    cookie: { maxAge: oneDay },
+    cookie: { maxAge: oneHour },
     resave: false,
 })
 

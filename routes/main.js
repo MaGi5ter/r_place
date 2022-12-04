@@ -6,11 +6,21 @@ const db = require('../mysql')
 router
     .route("/")
     .get((req,res) => {
-        req.session.simpleAuth = 1
-        res.render('index',{
-            blocks:  JSON.stringify(globals.block),
-            hgh: JSON.stringify(globals.hgh)
-        })
+
+        //its made in that way so bots dont get cookie with auth so easly
+        if(req.session.simpleAuth == 1) {
+            res.render('index',{
+                blocks:  JSON.stringify(globals.block),
+                hgh: JSON.stringify(globals.hgh)
+            })
+        }
+        else {
+            req.session.simpleAuth = 1
+            setTimeout(() => {
+                console.log('awdaw')
+                res.redirect('/')
+            }, 500);
+        }
     })
 
 module.exports = router
