@@ -121,9 +121,13 @@ module.exports = async function (io) {
                     console.log('edited by ',clientIp,' ',socket.id,' || ',data[1][0],',',data[1][1],' || ip: ',ipPerMinute,'socket: ',socketPerTenSeconds)
 
                     let draw_data = [color,data[1]]
-                    io.emit('draw',draw_data)
-                    let index = ((parseInt(data[1][0])-1) * parseInt(config.place_row) + parseInt(data[1][1]))-1                  
-                    globals.block[index][2] = color
+                    let index = ((parseInt(data[1][0])-1) * parseInt(config.place_row) + parseInt(data[1][1]))-1 
+                    try {
+                        globals.block[index][2] = color
+                        io.emit('draw',draw_data)
+                    } catch (error) {
+                        if(error) console.log('invalid index')
+                    }                 
                     
                 }
             })

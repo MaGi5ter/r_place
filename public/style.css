@@ -4,50 +4,26 @@ body {
 
 body::-webkit-scrollbar {
     display: none; /* for Chrome, Safari, and Opera */
-  }
-
-.column{
-    width: 30px;
-    height: auto;
-    overflow: hidden;
-    display: inline-block;
 }
 
-.row{
-    width: 30px;
-    height: 30px;
+#myCanvas {
+    margin-bottom: 5vw;
 }
 
-.cell {
-    width: 28px;
-    height: 29px;
-    margin-left: 1px;
-    margin-right: 1px;
-}
-
-.cell:hover{
-    outline: 1px solid black
-}
-
-.container{
-    white-space: nowrap;
-    overflow-x: scroll;
-}
-
-#color{
-    width: 134px;
-    height: 24px;
+#select_color {
     position: fixed;
+    display: flex;
+    bottom: 0;
+    left: 30vw;
+    margin-top: 10vw;
     background: grey;
-    display: none;
+    height: 5vw;
+    width: 40vw;
+    border: solid 3px black
 }
 
-.green,.red,.blue,.yellow,.pink,.grey {
-    width: 20px;
-    height: 20px;
-    float: left;
-    margin: 1px;
-    margin-top: 2px;
+#select_block {
+    width: 16.66%;
 }
 
 .green:hover ,.red:hover,  .blue:hover,  .yellow:hover ,  .grey:hover ,  .pink:hover {
@@ -56,7 +32,6 @@ body::-webkit-scrollbar {
 
 .green {
     background-color: greenyellow;
-    margin-left: 2px;
 }
 
 .red {
