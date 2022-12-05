@@ -37,8 +37,8 @@ function drawPlace(hgh,colors) {
     let col = hgh[0].col
     let row = hgh[0].row
 
-    canvas.width = placeBlockHeight * col
-    canvas.height = placeBlockHeight * row
+    canvas.width = placeBlockHeight * col + placeBlockHeight
+    canvas.height = placeBlockHeight * row + placeBlockHeight
 
     for (const i of colors) {
         ctx.fillStyle = `#${i[2]}`;

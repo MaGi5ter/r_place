@@ -20,9 +20,9 @@ module.exports = async function (io) {
 
         console.log('new connection from',clientIp ,'sessionID: ',socket.request.sessionID)
         //console.log(clientIp);
-        const findIP = ipBlock.findIndex(element => element[0] == clientIp)
+        let findIP = ipBlock.findIndex(element => element[0] == clientIp)
 
-        if(findIP >= 0) {
+        if(findIP != -1) {
             if(ipBlock[findIP][1] >= limitFromSingleIp) {
                 socket.emit('alert',disc)
                 socket.disconnect()
@@ -32,13 +32,14 @@ module.exports = async function (io) {
             ipBlock[findIP][1] = ipBlock[findIP][1] + 1
         }
         else {
-            ipBlock.push([clientIp,1,tenSecLimit,[[],[]]])
+            ipBlock.push([clientIp,1,tenSecLimit,[[],[]]],0)
+            console.log(ipBlock[findIP])
         }
 
         const findSession = sessionBlock.findIndex(element => element[0] == socket.request.sessionID)
 
         if(findSession == -1) {
-            sessionBlock.push([socket.request.sessionID,0])
+            sessionBlock.push([socket.request.sessionID,1])
         }
         else {
             if(sessionBlock[findSession][1] > 0) {
@@ -51,10 +52,15 @@ module.exports = async function (io) {
 
         socket.on('disconnect', (data) => {
             console.log(socket.id,' disconnected')
+            const findIP = ipBlock.findIndex(element => element[0] == clientIp)
+            const findSession = sessionBlock.findIndex(element => element[0] == socket.request.sessionID)
             try {
                 ipBlock[findIP][1] = ipBlock[findIP][1] -1  
+                console.log(ipBlock[findIP][1])
                 sessionBlock[findSession][1] =  sessionBlock[findSession][1] -1
-            } catch (error) {}
+            } catch (error) {
+                if(error) console.log(error)
+            }
         })
 
         let socketCooldownCount = []
@@ -92,12 +98,21 @@ module.exports = async function (io) {
             if(ipPerMinute > (ipBlock[findIP][2] * limitFromSingleIp) * 3.8 ) {
                 //if that happens its huge chance that there are bots sending requests
 
-                if(ipBlock[findIP][2] > 0) {
+                if(ipBlock[findIP][2] > 1) {
                     ipBlock[findIP][2] = ipBlock[findIP][2] - 1
                 }
                 ipBlock[findIP][3][1] = ipBlock[findIP][3][1].slice(ipBlock[findIP][3][1].length)
+                ipBlock[findIP][4].push(Date.now())
                 socket.emit('alert',probablyBot )
                 return
+            }
+
+            if(ipBlock[findIP][4] != 0) {
+                if(Date.now() - ipBlock[findIP][4] > 1000 * 60 * 5) {
+                    if(ipBlock[findIP][2] < tenSecLimit) {
+                        ipBlock[findIP][2] + 1
+                    }
+                } 
             }
 
             try {

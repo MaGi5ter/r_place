@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router()
 const globals = require('../globals')
-const db = require('../mysql')
+const config = require('../config.json')
+const request = require('request')
 
 router
     .route("/")
     .get((req,res) => {
 
-        //its made in that way so bots dont get cookie with auth so easly
         if(req.session.simpleAuth == 1) {
             res.render('index',{
                 blocks:  JSON.stringify(globals.block),
@@ -15,11 +15,34 @@ router
             })
         }
         else {
-            req.session.simpleAuth = 1
-            setTimeout(() => {
-                res.redirect('/')
-            }, 500);
+            res.render('captcha' ,{
+                captcha: config['captcha-client']
+            })
         }
+    })
+    .post((req,res) => {
+        
+        if(req.body['g-recaptcha-response'] == undefined )
+        return
+
+        const secretKey = config['captcha-server']
+        const verifyURL = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body['g-recaptcha-response']}&remoteip=${req.connection.remoteAddress}`
+
+        request(verifyURL, (err,response,body) => {
+            body = JSON.parse(body)
+
+            console.log(body)
+
+            if(body.success == false) {
+                res.redirect('/')
+                return
+            }
+            else if(body.success == true) {
+                req.session.simpleAuth = 1
+                res.redirect('/')
+            }
+
+        })
     })
 
 module.exports = router

@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Authority</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  </head>
+
+  <style>
+    body {
+      width: 100%;
+      background: #2a2a2a;
+    }
+
+    form {
+      width: 304px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+  </style>
+
+  <body>
+    <form action="/" method="POST">
+      <div class="g-recaptcha" data-sitekey="<%- captcha%>"></div>
+      <br/>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>

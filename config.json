@@ -1,10 +1,12 @@
 {
-    "db_username": "",
-    "db_databse": "",
-    "db_password":"",
-    "db_server": "",
-    "express_session_secret": "awdjnksefughbawjop]vnm671238564kxghvagcla#%",
-    "place_col": 7,
-    "place_row": 5,
-    "default_color": "e8b833"
+    "db_username": "e3",
+    "db_databse": "d",
+    "db_password":"Ac",
+    "db_server": "myus",
+    "express_session_secret": "awdjnksefug564kxghvagcla#%",
+    "place_col": 305,
+    "place_row": 107,
+    "default_color": "A9A9A9",
+    "captcha-client" : "",
+    "captcha-server" : ""
 }
